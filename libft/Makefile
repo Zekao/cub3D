@@ -74,7 +74,7 @@ OBJS_B = $(addprefix $(OBJS_DIR), $(addsuffix .o, $(FILES_B)))
 
 
 .c.o: $(SRCS)
-	@$(CC) $(CFLAGS) -c -o $@ $< -I ../include/
+	@$(CC) $(CFLAGS) -c -o $@ $< -I ../mandatory/include/
 
 $(NAME): $(OBJS)
 	@$(AR) $@ $^

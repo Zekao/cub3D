@@ -6,7 +6,7 @@
 #    By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/27 20:05:12 by nabentay          #+#    #+#              #
-#    Updated: 2022/02/28 17:18:09 by emaugale         ###   ########.fr        #
+#    Updated: 2022/03/06 22:58:35 by emaugale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,14 +14,20 @@ NAME = cub3D
 BONUS_NAME = cub3D_bonus
 
 CC = gcc
-INCLUDE = include
-CFLAGS = -Werror -Wextra -Wall -g -I/usr/include -Imlx_linux -O3
+INCLUDE = mandatory/include
+INCLUDE_B = bonus/include
+CFLAGS = -Werror -Wextra -Wall -g -I/usr/include -Imlx_linux
 DEBUG = -g
 MLXFLAGS = -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz
 RM = rm -rf
 
 FILES = cub3D 						\
-		get_next_line/get_next_line \
+		mlx/init_mlx				\
+		math/math_utils				\
+		RayCasting/raycasting		\
+		RayCasting/raycasting_utils	\
+		RayCasting/raycasting_utils2\
+		get_next_line/get_next_line	\
 		memory/memory0				\
 		memory/memory1				\
 		parsing/check_content		\
@@ -29,14 +35,40 @@ FILES = cub3D 						\
 		parsing/utils_parsing		\
 		parsing/check_name			\
 		parsing/check_textures		\
-		parsing/adjust_map
+		parsing/adjust_map			\
+		parsing/start_direction		\
+		parsing/get_size_map		\
+		draw/functions				\
+		mlx/command					\
+		textures/create_textures	\
 
-FILES_B = cub3D \
+FILES_B = cub3D 					\
+		mlx/init_mlx				\
+		mlx/mouse					\
+		math/math_utils				\
+		minimap/minimap				\
+		RayCasting/raycasting		\
+		RayCasting/raycasting_utils	\
+		RayCasting/raycasting_utils2\
+		get_next_line/get_next_line	\
+		memory/memory0				\
+		memory/memory1				\
+		parsing/check_content		\
+		parsing/create_map			\
+		parsing/utils_parsing		\
+		parsing/check_name			\
+		parsing/check_textures		\
+		parsing/adjust_map			\
+		parsing/start_direction		\
+		parsing/get_size_map		\
+		draw/functions				\
+		mlx/command					\
+		textures/create_textures	\
 
-SRCS_DIR = ./
+SRCS_DIR = ./mandatory/
 SRCS = $(addprefix $(SRCS_DIR), $(addsuffix .c, $(FILES)))
 
-BONUS_DIR = ./
+BONUS_DIR = ./bonus/
 BONUS = $(addprefix $(SRCS_DIR), $(addsuffix .c, $(FILES_B)))
 
 OBJS_B_DIR = ./objs_b/
@@ -67,16 +99,31 @@ $(NAME): $(OBJS)
 
 $(OBJS_DIR):
 		@mkdir $@
-		@mkdir objs/memory
-		@mkdir objs/parsing
-		@mkdir objs/get_next_line
+		@mkdir $@/memory
+		@mkdir $@/math
+		@mkdir $@/RayCasting
+		@mkdir $@/parsing
+		@mkdir $@/get_next_line
+		@mkdir $@/draw
+		@mkdir $@/mlx
+		@mkdir $@/textures
 		@echo "$(GREEN)************ OBJS FOLDER CREATED$(RST)"
 
 $(OBJS_B_DIR):
 		@mkdir $@
+		@mkdir $@/memory
+		@mkdir $@/math
+		@mkdir $@/RayCasting
+		@mkdir $@/parsing
+		@mkdir $@/get_next_line
+		@mkdir $@/draw
+		@mkdir $@/mlx
+		@mkdir $@/minimap
+		@mkdir $@/textures
+		@echo "$(GREEN)************ OBJS FOLDER CREATED$(RST)"
 
 $(OBJS_B_DIR)%.o: $(BONUS_DIR)%.c
-		@$(CC) -o $@ -c $< $(CFLAGS) -I $(INCLUDE)
+		@$(CC) -o $@ -c $< $(CFLAGS) -I $(INCLUDE_B)
 		@echo "$(GREEN)************ $< COMPILED SUCESSFULLY$(RST)"
 
 debug: $(OBJS_DIR) $(OBJS)
@@ -90,15 +137,27 @@ bonus: $(OBJS_B_DIR) $(BONUS_NAME)
 
 $(BONUS_NAME): $(OBJS_B)
 		@make -C libft all --no-print-directory
-		@$(CC) $(CFLAGS) $(OBJS_B) -o $@
+		@make -C libft bonus --no-print-directory
+		@make -C mlx_linux --no-print-directory
+		@$(CC) $(CFLAGS) -I $(INCLUDE_B) -o $@ $^ $(MLXFLAGS) libft/libft.a
+		@echo "$(GREEN)************ $@ SUCESS$(RST)"
+		@echo "$(CYAN)┌────────────────────────────────────┐$(RST)"
+		@echo "$(CYAN)│             cub3D                  │$(RST)"
+		@echo "$(CYAN)│ Authors                   BONUS    │$(RST)"
+		@echo "$(CYAN)│                                    │$(RST)"
+		@echo "$(CYAN)│ Elidjah Maugalem                   │$(RST)"
+		@echo "$(CYAN)│ Naofel Bentayeb                    │$(RST)"
+		@echo "$(CYAN)└────────────────────────────────────┘$(RST)"
 
 clean:
 		@make -C libft clean --no-print-directory
+		@make -C mlx_linux clean --no-print-directory
 		@$(RM) $(OBJS_DIR) $(OBJS_B_DIR)
 		@echo "$(GREEN)************ OBJS DELETE SUCESS$(RST)"
 
 fclean: clean
 		@rm -f $(NAME)
+		@rm -f $(BONUS_NAME)
 		@rm -f libft/libft.a
 		@echo "$(GREEN)************ $(NAME) DELETE SUCESS$(RST)"
 
